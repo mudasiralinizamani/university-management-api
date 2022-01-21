@@ -4,6 +4,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database Context
 builder.Services.AddDbContext<AuthContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<ApiContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+
+// Dependency Injection
+builder.Services.AddScoped<IFaculty, IFacultyService>();
+builder.Services.AddScoped<INotification, INotificationService>();
 
 // Identity Configration
 builder.Services.AddIdentityCore<UserModel>().AddRoles<IdentityRole>().AddEntityFrameworkStores<AuthContext>();

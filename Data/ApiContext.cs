@@ -6,4 +6,5 @@ public class ApiContext : DbContext
 
   public DbSet<FacultyModel> Faculties { get; set; }
   public DbSet<NotificationModel> Notifications { get; set; }
+  public DbSet<DepartmentModel> Departments { get; set; }
 }

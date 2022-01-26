@@ -73,8 +73,27 @@ public class DepartmentController : ControllerBase
     catch
     {
       return BadRequest(new { code = "ServerError", error = "Error occurred while finding the department" });
-
     }
   }
 
+  [HttpGet]
+  [Route("GetByFacultyId/{faculty_id}")]
+  public async Task<ActionResult<IEnumerable<DepartmentModel>>> GetDepartmentByFacultyId(string faculty_id)
+  {
+    try
+    {
+      FacultyModel? faculty = await _facultyService.FindByIdAsync(faculty_id);
+
+      if (faculty is null)
+        return BadRequest(new { code = "FacultyNotFound", error = "Faculty is not found" });
+
+      IEnumerable<DepartmentModel> departments = await _departmentService.FindByFacultyIdAsync(faculty.Id);
+
+      return Ok(departments);
+    }
+    catch (Exception)
+    {
+      return BadRequest(new { code = "ServerError", error = "Error occurred while finding departments" });
+    }
+  }
 }

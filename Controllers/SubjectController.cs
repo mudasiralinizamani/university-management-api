@@ -36,7 +36,7 @@ public class SubjectController : ControllerBase
     SubjectModel? subject = await _subjectService.FindByNameAsync(dto.Name);
 
     if (subject is not null)
-      return BadRequest(new { code = "NameFound", error = $"Department name '{dto.Name}' is already taken" });
+      return BadRequest(new { code = "NameFound", error = $"Subject name '{dto.Name}' is already taken" });
 
     try
     {

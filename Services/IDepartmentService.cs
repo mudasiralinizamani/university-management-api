@@ -40,6 +40,12 @@ public class IDepartmentService : IDepartment
     _context.SaveChanges();
   }
 
+  public async Task<IEnumerable<DepartmentModel>> FindByFacultyIdAsync(string faculty_id)
+  {
+    ArgumentNullException.ThrowIfNull(faculty_id);
+    return await _context.Departments.Where(d => d.FacultyId == faculty_id).ToListAsync<DepartmentModel>();
+  }
+
   public async Task<DepartmentModel?> FindByIdAsync(string id)
   {
     ArgumentNullException.ThrowIfNull(id);

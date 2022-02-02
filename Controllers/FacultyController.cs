@@ -7,12 +7,14 @@ public class FacultyController : ControllerBase
   private readonly IFaculty _facultyService;
   private readonly UserManager<UserModel> _userManager;
   private readonly INotification _notificationService;
+  private readonly IDepartment _departmentService;
 
-  public FacultyController(IFaculty facultyService, UserManager<UserModel> userManager, INotification notificationService)
+  public FacultyController(IFaculty facultyService, UserManager<UserModel> userManager, INotification notificationService, IDepartment departmentService)
   {
     _facultyService = facultyService;
     _userManager = userManager;
     _notificationService = notificationService;
+    _departmentService = departmentService;
   }
 
   [HttpPost]
@@ -66,6 +68,49 @@ public class FacultyController : ControllerBase
     catch (Exception)
     {
       return BadRequest(new { code = "ServerError", error = "Error occurred while finding the faculty" });
+    }
+  }
+
+  [HttpPut]
+  [Route("UpdateDean")]
+  public async Task<ActionResult<object>> UpdateFacultyDean(UpdateFacultyDeanDto dto)
+  {
+    try
+    {
+      FacultyModel? faculty = await _facultyService.FindByIdAsync(dto.FacultyId);
+
+      if (faculty is null)
+        return BadRequest(new { code = "FacultyNotFound", error = "Faculty is not found" });
+      else if (faculty.DeanId == dto.DeanId)
+        return BadRequest(new { code = "SameDean", error = $"Dean '{faculty.DeanName}' already have this Faculty" });
+
+      UserModel dean = await _userManager.FindByIdAsync(dto.DeanId);
+
+      if (dean is null)
+        return BadRequest(new { code = "DeanNotFound", error = "Dean is not found" });
+      else if (dean.Role != "Dean")
+        return BadRequest(new { code = "UserNotDean", error = $"User '{dean.FullName}' is not dean" });
+
+      // Name and Id of old dean
+      string name = faculty.DeanName;
+      string id = faculty.DeanId;
+
+      FacultyModel model = _facultyService.UpdateDean(faculty, dean);
+      await _notificationService.CreateAsync($"Congrats, A new faculty '{faculty.Name}' has been assigned you", dean.Id, "success");
+      await _notificationService.CreateAsync($"Your faculty '{faculty.Name}' has assigned to another dean '{dean.FullName}'", id, "warning");
+
+      IEnumerable<DepartmentModel> departments = await _departmentService.FindByFacultyIdAsync(faculty.Id);
+
+      foreach (var department in departments)
+      {
+        await _notificationService.CreateAsync($"Faculty dean has been changed", department.HodId, "info");
+      }
+
+      return Ok(new { succeeded = true, faculty = faculty });
+    }
+    catch (Exception)
+    {
+      return BadRequest(new { code = "ServerError", error = "Error occurred while updating faculty dean" });
     }
   }
 

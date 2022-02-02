@@ -8,4 +8,7 @@ public interface IFaculty
   Task<FacultyModel?> FindByIdAsync(string id);
 
   void Delete(FacultyModel faculty);
+
+  FacultyModel UpdateDean(FacultyModel faculty, UserModel dean);
+  FacultyModel UpdateName(FacultyModel faculty, string name);
 }

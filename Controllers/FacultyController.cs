@@ -114,7 +114,6 @@ public class FacultyController : ControllerBase
     }
   }
 
-  // TODO Complete this function Delete Faculty and Delete info from Departments and Send Notification
   [HttpGet]
   [Route("Delete/{id}")]
   public async Task<ActionResult<object>> DeleteFaculty(string id)
@@ -126,7 +125,21 @@ public class FacultyController : ControllerBase
       if (faculty is null)
         return BadRequest(new { code = "NotFound", error = "Faculty is not found" });
 
-      return Ok(new { msg = "UnCompletedMethod" });
+
+      IEnumerable<DepartmentModel> departments = await _departmentService.FindByFacultyIdAsync(faculty.Id);
+
+      foreach (var department in departments)
+      {
+        await _departmentService.RemoveFacultyAsync(department);
+        await _notificationService.CreateAsync($"Faculty has been deleted", department.HodId, "error");
+      }
+
+
+      await _notificationService.CreateAsync($"Faculty '{faculty.Name}' is deleted", faculty.DeanId, "error");
+
+      _facultyService.Delete(faculty);
+
+      return Ok(new { succeeded = true });
     }
     catch (Exception)
     {

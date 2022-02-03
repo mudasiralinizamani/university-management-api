@@ -8,4 +8,6 @@ public interface IDepartment
   Task<DepartmentModel?> FindByIdAsync(string id);
   void DeleteDepartment(DepartmentModel department);
   Task<IEnumerable<DepartmentModel>> FindByFacultyIdAsync(string faculty_id);
+
+  Task<DepartmentModel> RemoveFacultyAsync(DepartmentModel department);
 }

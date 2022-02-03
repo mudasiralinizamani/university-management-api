@@ -62,4 +62,14 @@ public class IDepartmentService : IDepartment
   {
     return await _context.Departments.ToListAsync<DepartmentModel>();
   }
+
+  public async Task<DepartmentModel> RemoveFacultyAsync(DepartmentModel department)
+  {
+    ArgumentNullException.ThrowIfNull(department);
+
+    department.FacultyId = "";
+    department.FacultyName = "";
+    await _context.SaveChangesAsync();
+    return department;
+  }
 }

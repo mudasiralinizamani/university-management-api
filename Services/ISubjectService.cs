@@ -38,6 +38,12 @@ public class ISubjectService : ISubject
     _context.SaveChanges();
   }
 
+  public async Task<IEnumerable<SubjectModel>> FindByDepartmentIdAsync(string department_id)
+  {
+    ArgumentNullException.ThrowIfNull(department_id);
+    return await _context.Subjects.Where(s => s.DepartmentId == department_id).ToListAsync<SubjectModel>();
+  }
+
   public async Task<SubjectModel?> FindByIdAsync(string id)
   {
     ArgumentNullException.ThrowIfNull(id);

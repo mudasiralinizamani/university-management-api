@@ -7,4 +7,6 @@ public interface ISubject
   Task<SubjectModel?> FindByNameAsync(string name);
   Task<IEnumerable<SubjectModel>> GetAllAsync();
   void DeleteSubject(SubjectModel subject);
+
+  Task<IEnumerable<SubjectModel>> FindByDepartmentIdAsync(string department_id);
 }

@@ -75,4 +75,23 @@ public class SubjectController : ControllerBase
   {
     return Ok(await _subjectService.GetAllAsync());
   }
+
+  [HttpGet]
+  [Route("GetByDepartmentId/{department_id}")]
+  public async Task<ActionResult<IEnumerable<SubjectModel>>> GetSubjectsByDepartmentId(string department_id)
+  {
+    try
+    {
+      DepartmentModel? department = await _departmentService.FindByIdAsync(department_id);
+
+      if (department is null)
+        return BadRequest(new {code = "DepartmentNotFound", error = "Department is not found"});
+      
+      return Ok(await _subjectService.FindByDepartmentIdAsync(department.Id));
+    }
+    catch(Exception)
+    {
+      return BadRequest(new { code = "ServerError", error = "Error occurred while finding subjects" });
+    }
+  }
 }
